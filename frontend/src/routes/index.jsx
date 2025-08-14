@@ -1,12 +1,21 @@
-import React from "react";
+import React, { useState } from "react";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { CiSearch } from "react-icons/ci";
+import axios from "axios";
 
 export const Route = createFileRoute("/")({
   component: RouteComponent,
 });
 
 function RouteComponent() {
+  const [searchTerm, setSearchTerm] = useState("");
+
+  const handleSearch = (event) => {
+    event.preventDefault();
+    console.log(searchTerm);
+    setSearchTerm("");
+  };
+
   return (
     <div className="pt-20">
       <h1 className="text-7xl text-center font-bold text-teal-400">
@@ -21,12 +30,15 @@ function RouteComponent() {
           placeholder="i.e. 機会"
           className="w-96 rounded-md border border-gray-300 p-2.5 shadow-sm focus:border-blue-500
            focus:ring-teal-500 sm:text-sm"
+          value={searchTerm}
+          onChange={(e) => setSearchTerm(e.target.value)}
         />
         <button
           type="button"
           className="flex items-center justify-center gap-2 rounded-md bg-teal-500 px-4 py-2.5 text-sm font-semibold
            text-white shadow-sm hover:bg-teal-600 transition-colors focus-visible:outline focus-visible:outline-2 
            focus-visible:outline-offset-2 focus-visible:outline-blue-600 duration-300 ml-4"
+          onClick={handleSearch}
         >
           <CiSearch size={20} />
           <span>Search</span>

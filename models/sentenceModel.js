@@ -8,6 +8,9 @@ const sentenceSchema = new mongoose.Schema({
   englishTranslation: {
     type: String,
     required: true,
+  },
+  isApproved: {
+    type: Boolean,
   }
 });
 
