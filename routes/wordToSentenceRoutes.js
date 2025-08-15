@@ -1,5 +1,6 @@
 const express = require("express");
 const WordToSentence = require("../models/wordToSentenceModel");
+const Sentence = require("../models/sentenceModel");
 
 const wordToSentenceRouter = express.Router();
 
@@ -7,7 +8,9 @@ wordToSentenceRouter.get("/:word", async (req, res) => {
   const word = req.params.word;
   console.log("wordToSentence.get: ", word);
   try {
-    const wordToSentence = await WordToSentence.findOne({ word: word });
+    const wordToSentence = await WordToSentence.findOne({
+      word: word,
+    }).populate("sentences");
     if (!wordToSentence) {
       return res.status(404).json({ error: "Word not found" });
     }
@@ -22,7 +25,7 @@ wordToSentenceRouter.get("/:word", async (req, res) => {
 // This will create a new document if the word doesn't exist yet.
 wordToSentenceRouter.post("/:word", async (req, res) => {
   const { word } = req.params;
-  const { sentence } = req.body;
+  const { sentence, englishTranslation } = req.body;
 
   // Basic validation for the incoming sentence
   if (!sentence || typeof sentence !== "string" || sentence.trim() === "") {
@@ -32,15 +35,26 @@ wordToSentenceRouter.post("/:word", async (req, res) => {
   }
 
   try {
-    // Find a document by `word` and push the new sentence into its `sentences` array.
-    // The `upsert: true` option creates the document if it doesn't exist.
-    // The `new: true` option returns the modified document rather than the original.
+    // First, create a new Sentence document
+    const newSentence = new Sentence({
+      text: sentence,
+      englishTranslation: englishTranslation,
+    });
+    const savedSentence = await newSentence.save();
+
+    // Then, find the WordToSentence document and push the sentence's ObjectId
     const updatedDoc = await WordToSentence.findOneAndUpdate(
       { word: word },
-      { $push: { sentences: sentence } },
-      { new: true, upsert: true, runValidators: true, setDefaultsOnInsert: true }
+      { $push: { sentences: savedSentence._id } },
+      {
+        new: true,
+        upsert: true,
+        runValidators: true,
+        setDefaultsOnInsert: true,
+      }
     );
 
+    console.log("wordToSentence.post: ", updatedDoc, " Success!");
     return res.status(200).json(updatedDoc);
   } catch (error) {
     console.error("Error adding sentence:", error);

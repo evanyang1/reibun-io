@@ -9,6 +9,7 @@ export const Route = createFileRoute("/")({
 
 function RouteComponent() {
   const [searchTerm, setSearchTerm] = useState("");
+  const [searchResults, setSearchResults] = useState([]);
 
   const handleSearch = (event) => {
     event.preventDefault();
@@ -51,6 +52,14 @@ function RouteComponent() {
           <span>Search</span>
         </button>
       </form>
+      <div>
+        {searchResults.map((result) => (
+          <div key={result._id}>
+            <p>{result.text}</p>
+            <p>{result.englishTranslation}</p>
+          </div>
+        ))}
+      </div>
     </div>
   );
 }

@@ -9,9 +9,6 @@ const sentenceSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
-  isApproved: {
-    type: Boolean,
-  }
 });
 
 module.exports = mongoose.model("Sentence", sentenceSchema);
