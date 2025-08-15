@@ -1,11 +1,31 @@
 const express = require('express');
+const mongoose = require('mongoose');
+const cors = require('cors');
+require('dotenv').config();
+
+const apiRoutes = require('./routes');
+
 const app = express();
-const port = 3000;
+const PORT = process.env.PORT || 3000;
 
-app.get('/', (req, res) => {
-  res.send('Hello, World!');
-});
+// Middleware
+// 1. Enable Cross-Origin Resource Sharing (CORS)
+// This allows your frontend (running on a different port) to make requests to this backend.
+app.use(cors());
 
-app.listen(port, () => {
-  console.log(`Server is running on port ${port}`);
-});
+// 2. Enable JSON body parsing
+app.use(express.json());
+
+// 3. Mount API routes under the /api prefix
+app.use('/api', apiRoutes);
+
+// Connect to MongoDB
+mongoose.connect(process.env.MONGO_URI)
+  .then(() => {
+    console.log('MongoDB connected successfully.');
+    // Start the server only after the DB connection is successful
+    app.listen(PORT, () => {
+      console.log(`Server is running on http://localhost:${PORT}`);
+    });
+  })
+  .catch(err => console.error('MongoDB connection error:', err));

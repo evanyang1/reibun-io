@@ -5,7 +5,7 @@ const wordToSentenceRouter = express.Router();
 
 wordToSentenceRouter.get("/:word", async (req, res) => {
   const word = req.params.word;
-
+  console.log("wordToSentence.get: ", word);
   try {
     const wordToSentence = await WordToSentence.findOne({ word: word });
     if (!wordToSentence) {
